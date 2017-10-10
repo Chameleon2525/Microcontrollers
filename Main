@@ -1,0 +1,99 @@
+
+#include <htc.h>
+#include <stdio.h>
+#include "lcd.h"
+#include "usart.h"
+
+
+//Chip Settings
+__CONFIG(1,0x0200);
+__CONFIG(2,0X1E1F);
+__CONFIG(3,0X8100 & PBADDIS); // Disable Port B Analogue use.
+__CONFIG(4,0X00C1);
+__CONFIG(5,0XC00F);
+
+#define _XTAL_FREQ 4000000
+
+
+void pause (int j)
+{
+	int i;
+	for(i=0;i<=j;++i)
+	{
+		__delay_ms(1);
+	}
+}
+
+void init(void){
+	USARTInit();
+	TRISB = 0b00000001; //All of PORTB bits ‘except’ bit 0 (RB0) configure as an output
+	TRISA = 0x1F; // Make RA0, RA1, RA2, RA3, RA4 an input.
+	TRISC = 0;
+	TRISD=0;
+	ADON=1;	//enable converter
+	ADIE=0;	//not interrupt driven
+	ADCON1=0x70; //selecting 8 channels as analogue
+	ADFM=1; //right justification
+
+
+	lcd_init();
+}
+
+void main(void){
+	unsigned int total; //Decimal of total ADC
+	unsigned char outString[15] = "";
+	unsigned char adc_left, adc_right, last_value;
+	int resultofconversion = 0;
+	unsigned char MIDI;
+	unsigned char ledtest;
+	char state_machine;
+	unsigned int channel = 0;
+
+	init();
+	lcd_goto(0);	// select first line
+	lcd_puts("Mills MIDI:");
+	lcd_goto(0x40);	// select second line
+	lcd_puts("The Only Choice");
+    	pause(5000);
+	while(1){
+		PORTB = ledtest++;
+		if((RB0==0)&&(state_machine==0)){
+			state_machine=1;
+			channel++;
+		}
+		if ((RB0==1)&&(state_machine==1)){
+			state_machine=0;
+
+		} 	
+
+		NOP();
+		NOP(); 	
+		NOP();
+		NOP();
+		
+		GODONE=1; // Start a conversion on channel 0
+		while(GODONE)continue;
+			ADIF=0;
+			adc_left=ADRESL;
+			adc_right = ADRESH;
+			total = 256*adc_right+adc_left; //adresL has a bitvalue of up to 255, adresH is a multiple of 256
+			total = total/8; //selects first channel with range of 127
+			
+			if(adc_left!=last_value)
+			{      
+				lcd_clear();	// Clear screen if the value is different
+			}
+
+			sprintf(outString,"Pitch=%d", total);
+    		lcd_goto(0);	// select first line
+			lcd_puts(outString);
+
+			sprintf(outString,"Channel = %d", channel);
+    		lcd_goto(0x40);	// select second line
+			lcd_puts(outString);
+
+			last_value=adc_left;
+		// read value
+pause(250);
+	}
+} 

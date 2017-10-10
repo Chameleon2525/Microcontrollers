@@ -1,0 +1,21 @@
+_ProgramChange: CODE, 6270 0 28
+_lcd_goto: CODE, 6298 0 22
+_lcd_write: CODE, 5776 0 84
+_lcd_init: CODE, 5524 0 146
+_sprintf: CODE, 4340 0 544
+_PanChange: CODE, 5938 0 48
+_main: CODE, 1678 0 2662
+_USARTInit: CODE, 6240 0 30
+___awdiv: CODE, 4884 0 304
+_lcd_clear: CODE, 6128 0 40
+_USARTWriteByte: CODE, 6320 0 16
+_NoteOn: CODE, 6168 0 36
+_NoteOff: CODE, 6034 0 48
+_pause: CODE, 5860 0 78
+_ModulationLevel: CODE, 5986 0 48
+___lwdiv: CODE, 5188 0 184
+_Aftertouch: CODE, 6204 0 36
+_lcd_puts: CODE, 5670 0 106
+___lwmod: CODE, 5372 0 152
+_init: CODE, 6082 0 46
+Total: 4658
